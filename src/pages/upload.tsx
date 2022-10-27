@@ -33,9 +33,6 @@ const Upload = () => {
         body: formData,
       });
 
-      const json = await upload.json();
-      console.log(json);
-
       if (upload.ok) {
         console.log("Uploaded successfully!");
       } else {
