@@ -7,8 +7,8 @@ export default async function handler(
 ) {
   const s3 = new S3({
     apiVersion: "2006-03-01",
-    accessKeyId: process.env.AWS_ACCESS_KEY,
-    secretAccessKey: process.env.AWS_SECRET_KEY,
+    accessKeyId: process.env.AWS_ACCESS,
+    secretAccessKey: process.env.AWS_SECRET,
   });
 
   s3.getSignedUrl(
