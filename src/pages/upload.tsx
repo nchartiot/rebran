@@ -4,42 +4,41 @@ import { trpc } from "utils/trpc";
 
 const Upload = () => {
   const [file, setFile] = useState<File | null>(null);
-  const [fileBase64, setFileBase64] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
 
-  const uploadFileMutation = trpc.useMutation(["upload.uploadFile"]);
-
-  // convert file to base64 string
-  const toBase64 = (file: File) =>
-    new Promise<string>((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = (error) => reject(error);
-    });
-
-  const handleFileChange = async (file: File | null) => {
+  const handleFileChange = (file: File | null) => {
     if (file) {
-      const base64 = await toBase64(file);
+      console.log(file);
       setFile(file);
-      setFileBase64(base64);
-
-      console.log(base64);
     }
   };
 
   const handleUpload = async () => {
-    if (fileBase64) {
-      setUploading(true);
+    if (file) {
+      const fileId = uuidv4();
+      const filename = encodeURIComponent(fileId);
+      const fileType = encodeURIComponent(file.type);
 
-      const imgId = await uploadFileMutation.mutateAsync({
-        file: fileBase64,
-        id: uuidv4(),
+      const res = await fetch(
+        `/api/upload-url?file=${filename}&fileType=${fileType}`
+      );
+      const { url, fields } = await res.json();
+      const formData = new FormData();
+
+      Object.entries({ ...fields, file }).forEach(([key, value]) => {
+        formData.append(key, value as string);
       });
 
-      const imgUrl = `/img/${imgId}`;
+      const upload = await fetch(url, {
+        method: "POST",
+        body: formData,
+      });
 
-      setUploading(false);
+      if (upload.ok) {
+        console.log("Uploaded successfully!");
+      } else {
+        console.error("Upload failed.");
+      }
     }
   };
 
