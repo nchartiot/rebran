@@ -15,7 +15,8 @@ const Upload = () => {
 
   const handleUpload = async () => {
     if (file) {
-      const filename = encodeURIComponent(file.name);
+      const fileId = uuidv4();
+      const filename = encodeURIComponent(fileId);
       const fileType = encodeURIComponent(file.type);
 
       const res = await fetch(
