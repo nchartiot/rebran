@@ -11,17 +11,19 @@ export default async function handler(
     secretAccessKey: process.env.AWS_SECRET_KEY,
   });
 
-  const post = s3.createPresignedPost({
-    Bucket: process.env.AWS_BUCKET_NAME,
-    Fields: {
-      key: req.query.file,
-      "Content-Type": req.query.fileType,
+  s3.getSignedUrl(
+    "getObject",
+    {
+      Bucket: process.env.AWS_BUCKET_NAME,
+      Key: req.query.file,
+      Expires: 60 * 2, // 2 minutes
     },
-    Expires: 60, // seconds
-    Conditions: [
-      ["content-length-range", 0, 1048576], // up to 1 MB
-    ],
-  });
-
-  res.status(200).json(post);
+    (err, url) => {
+      if (err) {
+        res.status(500).json({ error: err });
+      } else {
+        res.status(200).json({ url });
+      }
+    }
+  );
 }
