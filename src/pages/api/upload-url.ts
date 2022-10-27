@@ -11,7 +11,7 @@ export default async function handler(
     secretAccessKey: process.env.AWS_SECRET_KEY,
   });
 
-  const post = await s3.createPresignedPost({
+  const post = s3.createPresignedPost({
     Bucket: process.env.AWS_BUCKET_NAME,
     Fields: {
       key: req.query.file,
